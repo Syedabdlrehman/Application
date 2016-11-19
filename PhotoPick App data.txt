@@ -1,0 +1,285 @@
+
+<html>
+<!--
+Created using JS Bin
+http://jsbin.com
+
+Copyright (c) 2016 by Syedabdlrehman (http://jsbin.com/pikohaf/1/edit)
+
+Released under the MIT license: http://jsbin.mit-license.org
+-->
+<meta name="robots" content="noindex">
+<head>
+
+<body onload="init();">
+  <h1>Photopick App</h1>
+<div>
+<video onclick="changeFilter(this);" width=400 height=400 id="video" controls autoplay></video>
+<center><button onclick="startWebcam();">Start WebCam</button>
+<button onclick="stopWebcam();">Stop WebCam</button>
+<button onclick="snapshot();">Save and download a Selfy</button> 
+  </center></div> 
+
+ <center><canvas id="myCanvas" width="820" height="250">
+<canvas id="myHiddenCanvas" class="hiddenCanvas" width="400" height="320">
+   </canvas></center> 
+
+
+<script>
+navigator.getUserMedia = ( navigator.getUserMedia ||
+                       navigator.webkitGetUserMedia ||
+                       navigator.mozGetUserMedia ||
+                       navigator.msGetUserMedia);
+
+var webcamStream;
+var video;
+var count = 0;		
+var video;
+var webcamStream;
+      
+function startWebcam() {
+if (navigator.getUserMedia) {
+   navigator.getUserMedia (
+
+      // constraints
+      {
+         video: true,
+         audio: false
+      },
+
+      // successCallback
+      function(localMediaStream) {
+          video = document.querySelector('video');
+         video.src = window.URL.createObjectURL(localMediaStream);
+         webcamStream = localMediaStream;
+      },
+
+      // errorCallback
+      function(err) {
+         console.log("The following error occured: " + err);
+      }
+   );
+} else {
+   console.log("getUserMedia not supported");
+}  
+}
+      
+function stopWebcam() {
+	webcamStream.stop();
+	}
+var idx = 0;
+  var filters = [
+    'grayscale',
+    'sepia',
+    'blur',
+    'brightness',
+    'contrast',
+    'hue-rotate', 'hue-rotate2', 'hue-rotate3',
+    'saturate',
+    'invert'
+  ];
+  
+  function changeFilter(el) {
+    // Remove all CSS classes for element el
+    el.className = '';
+    
+    // Choose a CSS class name
+        console.log("toggling effect: " + filters[idx % filters.length]);
+    
+    var effect = filters[idx++ % filters.length];  
+    el.classList.add(effect);
+
+}
+
+	  
+//---------------------
+// TAKE A SNAPSHOT CODE
+//---------------------
+var canvas, ctx, data, hiddenCanvas, hiddenctx;
+var firstTime = false;
+function init() {
+  // Get the  2 canvas and obtain a context for
+  // drawing in it
+  canvas = document.getElementById("myCanvas");
+  ctx = canvas.getContext('2d');
+  
+  hiddenCanvas = document.getElementById("myHiddenCanvas");
+  hiddenctx = hiddenCanvas.getContext('2d');
+  
+}
+
+function snapshot() {
+	hiddenctx.drawImage(video, 0,0, hiddenCanvas.width, hiddenCanvas.height);
+	ctx.drawImage(video, count,0, canvas.width/6, canvas.height);
+	if(count>=600){
+		count=0;
+		} else {
+			count = count + 120;
+			}
+			
+    data = hiddenCanvas.toDataURL("image/png");
+	//data = data.replace("image/png","image/octet-stream");
+	//data = data + ".png";
+	saveSelfy(data);
+	//document.location.href = data;
+	//alert(data);
+   // Draws current image from the video element into the canvas
+   
+   //img = ctx.drawImage(video, 0,0, canvas.width/6, canvas.height);
+   
+   //document.body.appendChild(data);
+  
+}
+  
+ 
+
+function saveSelfy() {
+
+	var link = document.createElement('a');
+    link.download = "selfy.png";
+    link.href = data;
+	link.click();
+}
+</script>
+<script src="https://static.jsbin.com/js/render/edit.js?3.40.2"></script>
+<script>jsbinShowEdit && jsbinShowEdit({"static":"https://static.jsbin.com","root":"https://jsbin.com"});</script>
+<script src="https://static.jsbin.com/js/vendor/eventsource.js?3.40.2"></script>
+<script src="https://static.jsbin.com/js/spike.js?3.40.2"></script>
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-1656750-34', 'auto');
+ga('require', 'linkid', 'linkid.js');
+ga('require', 'displayfeatures');
+ga('send', 'pageview');
+
+</script>
+
+</body>
+
+<style id="jsbin-css">
+canvas {
+  border:1px solid red;
+    border-radius: 25px;
+    background-color:magenta;
+    padding: 25px;
+    width: 900px;
+    height: 150px;
+    
+   }
+body {
+  background-color:orange;
+}
+h1
+{
+  text-align:center;
+  font-size :100px;
+  font-family:courier;
+  }
+button
+{
+  display:inline;
+  margin: 0 auto;
+  
+ color:black;
+  background-color:grey;
+  padding:5px;
+  border-radius:15px;
+  font-family:verdana;
+  
+}
+#output {
+  width: 317px;
+  height:250px;
+  background: rgba(255,255,255,0.5);
+  border: 1px solid #ccc;
+}
+video {
+    display: block;
+    margin: 0 auto;
+    border-radius:25px;
+  
+}
+#screenshot-stream {
+  width:initial;
+  height:initial;
+}
+#screenshot {
+  vertical-align:center;
+}
+.blur {
+  -webkit-filter: blur(3px);
+  -moz-filter: blur(3px);
+  -o-filter: blur(3px);
+  -ms-filter: blur(3px);
+  filter: blur(3px);
+}
+.brightness {
+  -webkit-filter: brightness(5);
+  -moz-filter: brightness(5);
+  -o-filter: brightness(5);
+  -ms-filter: brightness(5);
+  filter: brightness(5);
+}
+.contrast {
+  -webkit-filter: contrast(8);
+  -moz-filter: contrast(8);
+  -o-filter: contrast(8);
+  -ms-filter: contrast(8);
+  filter: contrast(8);
+}
+.hue-rotate {
+  -webkit-filter: hue-rotate(90deg);
+  -moz-filter: hue-rotate(90deg);
+  -o-filter: hue-rotate(90deg);
+  -ms-filter: hue-rotate(90deg);
+  filter: hue-rotate(90deg);
+}
+.hue-rotate2 {
+  -webkit-filter: hue-rotate(180deg);
+  -moz-filter: hue-rotate(180deg);
+  -o-filter: hue-rotate(180deg);
+  -ms-filter: hue-rotate(180deg);
+  filter: hue-rotate(180deg);
+}
+.hue-rotate3 {
+  -webkit-filter: hue-rotate(270deg);
+  -moz-filter: hue-rotate(270deg);
+  -o-filter: hue-rotate(270deg);
+  -ms-filter: hue-rotate(270deg);
+  filter: hue-rotate(270deg);
+}
+.saturate {
+  -webkit-filter: saturate(10);
+  -moz-filter: saturate(10);
+  -o-filter: saturate(10);
+  -ms-filter: saturate(10);
+  filter: saturate(10);
+}
+.grayscale {
+  -webkit-filter: grayscale(1);
+  -moz-filter: grayscale(1);
+  -o-filter: grayscale(1);
+  -ms-filter: grayscale(1);
+  filter: grayscale(1);
+}
+.sepia {
+  -webkit-filter: sepia(1);
+  -moz-filter: sepia(1);
+  -o-filter: sepia(1);
+  -ms-filter: sepia(1);
+  filter: sepia(1);
+}
+.invert {
+  -webkit-filter: invert(1);
+  -moz-filter: invert(1)
+  -o-filter: invert(1)
+  -ms-filter: invert(1)
+  filter: invert(1)
+}
+</style>
+</head>
+</html>
